@@ -1,6 +1,16 @@
-﻿#include <iostream>
+﻿#include <cassert>
+#include <iostream>
 
-void main()
+#include "angelscript.h"
+
+int main(int argc, char** argv)
 {
-    std::cout << "Hello, AngelScript!" << std::endl;
+    asIScriptEngine* engine = asCreateScriptEngine();
+    assert(engine != nullptr);
+
+    engine->ShutDownAndRelease();
+
+    std::cout << "AngelScript engine created and released successfully." << std::endl;
+
+    return 0;
 }
