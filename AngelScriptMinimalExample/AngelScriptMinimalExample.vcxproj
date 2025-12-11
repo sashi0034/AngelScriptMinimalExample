@@ -100,7 +100,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>./;../angelscript/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -118,7 +118,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>./;../angelscript/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -131,6 +131,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="add_on\contextmgr\contextmgr.cpp" />
+    <ClCompile Include="add_on\datetime\datetime.cpp" />
+    <ClCompile Include="add_on\debugger\debugger.cpp" />
+    <ClCompile Include="add_on\scriptany\scriptany.cpp" />
+    <ClCompile Include="add_on\scriptarray\scriptarray.cpp" />
+    <ClCompile Include="add_on\scriptbuilder\scriptbuilder.cpp" />
+    <ClCompile Include="add_on\scriptdictionary\scriptdictionary.cpp" />
+    <ClCompile Include="add_on\scriptfile\scriptfile.cpp" />
+    <ClCompile Include="add_on\scriptfile\scriptfilesystem.cpp" />
+    <ClCompile Include="add_on\scriptgrid\scriptgrid.cpp" />
+    <ClCompile Include="add_on\scripthandle\scripthandle.cpp" />
+    <ClCompile Include="add_on\scripthelper\scripthelper.cpp" />
+    <ClCompile Include="add_on\scriptmath\scriptmath.cpp" />
+    <ClCompile Include="add_on\scriptmath\scriptmathcomplex.cpp" />
+    <ClCompile Include="add_on\scriptsocket\scriptsocket.cpp" />
+    <ClCompile Include="add_on\scriptstdstring\scriptstdstring.cpp" />
+    <ClCompile Include="add_on\scriptstdstring\scriptstdstring_utils.cpp" />
+    <ClCompile Include="add_on\serializer\serializer.cpp" />
+    <ClCompile Include="add_on\weakref\weakref.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +158,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="add_on\autowrapper\aswrappedcall.h" />
+    <ClInclude Include="add_on\contextmgr\contextmgr.h" />
+    <ClInclude Include="add_on\datetime\datetime.h" />
+    <ClInclude Include="add_on\debugger\debugger.h" />
+    <ClInclude Include="add_on\scriptany\scriptany.h" />
+    <ClInclude Include="add_on\scriptarray\scriptarray.h" />
+    <ClInclude Include="add_on\scriptbuilder\scriptbuilder.h" />
+    <ClInclude Include="add_on\scriptdictionary\scriptdictionary.h" />
+    <ClInclude Include="add_on\scriptfile\scriptfile.h" />
+    <ClInclude Include="add_on\scriptfile\scriptfilesystem.h" />
+    <ClInclude Include="add_on\scriptgrid\scriptgrid.h" />
+    <ClInclude Include="add_on\scripthandle\scripthandle.h" />
+    <ClInclude Include="add_on\scripthelper\scripthelper.h" />
+    <ClInclude Include="add_on\scriptmath\scriptmath.h" />
+    <ClInclude Include="add_on\scriptmath\scriptmathcomplex.h" />
+    <ClInclude Include="add_on\scriptsocket\scriptsocket.h" />
+    <ClInclude Include="add_on\scriptstdstring\scriptstdstring.h" />
+    <ClInclude Include="add_on\serializer\serializer.h" />
+    <ClInclude Include="add_on\weakref\weakref.h" />
     <ClInclude Include="asbind20\asbind.hpp" />
     <ClInclude Include="asbind20\bind.hpp" />
     <ClInclude Include="asbind20\bind\class.hpp" />
