@@ -1,105 +1,134 @@
-﻿#include <cassert>
-#include <cstdio>
+﻿#include <iostream>
 
-#include "angelscript.h"
-#include "add_on/scriptbuilder/scriptbuilder.h"
+#include "add_on/scriptarray/scriptarray.h"
 #include "add_on/scriptstdstring/scriptstdstring.h"
+#include "add_on/datetime/datetime.h"
+#include "add_on/scriptbuilder/scriptbuilder.h"
+#include "add_on/scriptfile/scriptfile.h"
+#include "asbind20/bind.hpp"
+#include "asbind20/invoke.hpp"
 
-// メッセージコールバック
-void MessageCallback(const asSMessageInfo* msg, void* param)
+namespace
 {
-    const char* type = "ERR ";
-    if (msg->type == asMSGTYPE_WARNING) type = "WARN";
-    else if (msg->type == asMSGTYPE_INFORMATION) type = "INFO";
-
-    printf("%s (%d, %d) : %s : %s\n", msg->section, msg->row, msg->col, type, msg->message);
-}
-
-// C++ から呼ばれる関数
-void print(const std::string& msg)
-{
-    printf("%s", msg.c_str());
-}
-
-int main(int argc, char** argv)
-{
-    // エンジン生成
-    asIScriptEngine* engine = asCreateScriptEngine();
-    assert(engine != nullptr);
-
-    // メッセージコールバック登録
-    int r = engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
-    assert(r >= 0);
-
-    // 標準文字列型を登録
-    RegisterStdString(engine);
-
-    // グローバル関数 print() を登録
-    r = engine->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(print), asCALL_CDECL);
-    assert(r >= 0);
-
-    // スクリプトビルダーでモジュール作成
-    CScriptBuilder builder;
-    r = builder.StartNewModule(engine, "MyModule");
-    if (r < 0)
+    void MessageCallback(const asSMessageInfo* msg, void* param)
     {
-        printf("Failed to start module\n");
-        return -1;
-    }
+        auto type = "[error]";
+        if (msg->type == asMSGTYPE_WARNING)
+            type = "[warn] ";
+        else if (msg->type == asMSGTYPE_INFORMATION)
+            type = "[info] ";
 
-    // スクリプトをセクションとして追加
-    const char* script = R"(
-        void as_main()
+        const auto message = std::format("{} {}({},{}) {}", type, msg->section, msg->row, msg->col, msg->message);
+        if (msg->type == asMSGTYPE_INFORMATION)
         {
-            print("Hello world\n");
+            std::cout << message << std::endl;
         }
-)";
-
-    r = builder.AddSectionFromMemory("my_script.as", script);
-    if (r < 0)
-    {
-        printf("Failed to add script section\n");
-        return -1;
+        else
+        {
+            std::cerr << message << std::endl;
+        }
     }
+
+    void script_print(const std::string& message)
+    {
+        printf("%s", message.c_str());
+    }
+
+    void println(const std::string& message)
+    {
+        printf("%s\n", message.c_str());
+    }
+
+    struct Vector3
+    {
+        float x, y, z;
+    };
+
+    struct FlagAndVector3
+    {
+        bool flag;
+        Vector3 vec;
+
+        operator bool() const
+        {
+            return flag;
+        }
+
+        float manhattan() const
+        {
+            return vec.x + vec.y + vec.z;
+        }
+    };
+
+    void registerEngine(const asbind20::script_engine& engine)
+    {
+        // script extenstion: https://www.angelcode.com/angelscript/sdk/docs/manual/doc_addon_script.html
+        RegisterStdString(engine);
+        RegisterScriptArray(engine, true);
+
+        // asbind20: https://github.com/HenryAWE/asbind20/
+        asbind20::global(engine)
+            .message_callback(&MessageCallback)
+            .function("void print(const string& in message)", &script_print)
+            .function("void println(const string& in message)", &println);
+
+        asbind20::value_class<Vector3>(engine, "Vector3", asOBJ_APP_CLASS_ALLFLOATS)
+            .behaviours_by_traits()
+            .property("float x", &Vector3::x)
+            .property("float y", &Vector3::y)
+            .property("float z", &Vector3::z);
+
+        asbind20::value_class<FlagAndVector3>(engine, "FlagAndVector3")
+            .behaviours_by_traits()
+            .constructor<bool>("bool flag")
+            .opEquals()
+            .opConv<bool>()
+            .opImplConv<bool>()
+            .property("bool flag", &FlagAndVector3::flag)
+            .property("Vector3 vec", &FlagAndVector3::vec)
+            .method("float manhattan() const", &FlagAndVector3::manhattan);
+    }
+}
+
+int main()
+{
+    std::string moduleName{"my_script/my_script.as"};
+
+    const auto engine = asbind20::make_script_engine();
+
+    registerEngine(engine);
+
+    CScriptBuilder builder{};
+
+    int r;
+    r = builder.StartNewModule(engine, moduleName.c_str()) < 0;
+    assert(r >= 0);
+
+    r = builder.AddSectionFromFile(moduleName.c_str()) < 0;
+    assert(r >=0);
 
     r = builder.BuildModule();
-    if (r < 0)
+    assert(r >= 0);
+
+    asIScriptModule* module = engine->GetModule(moduleName.c_str());
+    assert(module != nullptr);
+
+    const asbind20::request_context ctx{engine};
+
+    FlagAndVector3 arg0;
+    arg0.flag = true;
+    arg0.vec = {1.0f, 2.0f, 3.0f};
+
+    asIScriptFunction* func = module->GetFunctionByDecl("float as_main(FlagAndVector3 value)");
+    const auto result = asbind20::script_invoke<float>(ctx, func, arg0);
+    if (result.has_value())
     {
-        printf("Failed to build module\n");
-        return -1;
+        std::cout << "C++: result: " << result.value() << std::endl;
+    }
+    else
+    {
+        std::cerr << "Failed to execute the script: " << result.error() << std::endl;
     }
 
-    // モジュール取得
-    asIScriptModule* mod = engine->GetModule("MyModule");
-    if (!mod)
-    {
-        printf("Module not found\n");
-        return -1;
-    }
-
-    // 関数取得
-    asIScriptFunction* func = mod->GetFunctionByDecl("void as_main()");
-    if (!func)
-    {
-        printf("Function 'void as_main()' not found\n");
-        return -1;
-    }
-
-    // コンテキスト作成・準備・実行
-    asIScriptContext* ctx = engine->CreateContext();
-    ctx->Prepare(func);
-    r = ctx->Execute();
-    if (r != asEXECUTION_FINISHED)
-    {
-        if (r == asEXECUTION_EXCEPTION)
-        {
-            printf("Exception: %s\n", ctx->GetExceptionString());
-        }
-    }
-
-    // クリーンアップ
-    ctx->Release();
-    engine->ShutDownAndRelease();
-
-    return 0;
+    module->Discard();
 }
