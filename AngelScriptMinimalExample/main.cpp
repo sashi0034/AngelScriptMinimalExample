@@ -34,7 +34,7 @@ namespace
         printf("%s", message.c_str());
     }
 
-    void println(const std::string& message)
+    void script_println(const std::string& message)
     {
         printf("%s\n", message.c_str());
     }
@@ -60,17 +60,19 @@ namespace
         }
     };
 
+    // C++ の型や関数を AngelScript に登録する
     void registerEngine(const asbind20::script_engine& engine)
     {
-        // script extenstion: https://www.angelcode.com/angelscript/sdk/docs/manual/doc_addon_script.html
         RegisterStdString(engine);
         RegisterScriptArray(engine, true);
 
-        // asbind20: https://github.com/HenryAWE/asbind20/
+        // -----------------------------------------------
+        // asbind20 を使用して型や関数を登録する
+
         asbind20::global(engine)
             .message_callback(&MessageCallback)
             .function("void print(const string& in message)", &script_print)
-            .function("void println(const string& in message)", &println);
+            .function("void println(const string& in message)", &script_println);
 
         asbind20::value_class<Vector3>(engine, "Vector3", asOBJ_APP_CLASS_ALLFLOATS)
             .behaviours_by_traits()
@@ -92,13 +94,13 @@ namespace
 
 int main()
 {
-    std::string moduleName{"my_script/my_script.as"};
-
     const auto engine = asbind20::make_script_engine();
 
     registerEngine(engine);
 
     CScriptBuilder builder{};
+
+    std::string moduleName{"my_script/my_script.as"};
 
     int r;
     r = builder.StartNewModule(engine, moduleName.c_str()) < 0;
@@ -119,7 +121,10 @@ int main()
     arg0.flag = true;
     arg0.vec = {1.0f, 2.0f, 3.0f};
 
+    // my_script.as で定義された as_main を取得する
     asIScriptFunction* func = module->GetFunctionByDecl("float as_main(FlagAndVector3 value)");
+
+    // 引数を渡して実行する
     const auto result = asbind20::script_invoke<float>(ctx, func, arg0);
     if (result.has_value())
     {
