@@ -49,13 +49,13 @@ int main(int argc, char** argv)
 
     // スクリプトをセクションとして追加
     const char* script = R"(
-        void main()
+        void as_main()
         {
             print("Hello world\n");
         }
 )";
 
-    r = builder.AddSectionFromMemory("script.as", script);
+    r = builder.AddSectionFromMemory("my_script.as", script);
     if (r < 0)
     {
         printf("Failed to add script section\n");
@@ -78,10 +78,10 @@ int main(int argc, char** argv)
     }
 
     // 関数取得
-    asIScriptFunction* func = mod->GetFunctionByDecl("void main()");
+    asIScriptFunction* func = mod->GetFunctionByDecl("void as_main()");
     if (!func)
     {
-        printf("Function 'void main()' not found\n");
+        printf("Function 'void as_main()' not found\n");
         return -1;
     }
 
