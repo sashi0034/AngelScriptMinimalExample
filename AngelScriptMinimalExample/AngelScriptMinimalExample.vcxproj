@@ -103,7 +103,9 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>../angelscript/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;../angelscript/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,7 +121,9 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>../angelscript/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;../angelscript/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,6 +137,34 @@
     <ProjectReference Include="..\angelscript\projects\msvc2022\angelscript.vcxproj">
       <Project>{39e6af97-6ba3-4a72-8c61-bcebf214ebfd}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="asbind20\asbind.hpp" />
+    <ClInclude Include="asbind20\bind.hpp" />
+    <ClInclude Include="asbind20\bind\class.hpp" />
+    <ClInclude Include="asbind20\bind\common.hpp" />
+    <ClInclude Include="asbind20\bind\enum.hpp" />
+    <ClInclude Include="asbind20\bind\global.hpp" />
+    <ClInclude Include="asbind20\bind\wrappers.hpp" />
+    <ClInclude Include="asbind20\concurrent\threading.hpp" />
+    <ClInclude Include="asbind20\container\options.hpp" />
+    <ClInclude Include="asbind20\container\small_vector.hpp" />
+    <ClInclude Include="asbind20\decl.hpp" />
+    <ClInclude Include="asbind20\detail\config.hpp" />
+    <ClInclude Include="asbind20\detail\include_as.hpp" />
+    <ClInclude Include="asbind20\foreach.hpp" />
+    <ClInclude Include="asbind20\generic.hpp" />
+    <ClInclude Include="asbind20\invoke.hpp" />
+    <ClInclude Include="asbind20\io\stream.hpp" />
+    <ClInclude Include="asbind20\memory.hpp" />
+    <ClInclude Include="asbind20\meta.hpp" />
+    <ClInclude Include="asbind20\operators.hpp" />
+    <ClInclude Include="asbind20\policies.hpp" />
+    <ClInclude Include="asbind20\type_traits.hpp" />
+    <ClInclude Include="asbind20\utility.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="example-script\main.as" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
