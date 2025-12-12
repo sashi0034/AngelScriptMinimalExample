@@ -42,12 +42,22 @@ namespace
     struct Vector3
     {
         float x, y, z;
+
+        bool operator==(const Vector3&) const = default;
     };
 
     struct FlagAndVector3
     {
         bool flag;
         Vector3 vec;
+
+        FlagAndVector3() = default;
+
+        FlagAndVector3(bool flag) : flag(flag), vec{0.0f, 0.0f, 0.0f}
+        {
+        }
+
+        bool operator==(const FlagAndVector3&) const = default;
 
         operator bool() const
         {
@@ -71,21 +81,23 @@ namespace
 
         asbind20::global(engine)
             .message_callback(&MessageCallback)
-            .function("void print(const string& in message)", &script_print)
+            .function("void print(const string& in message)", &script_print) // グローバル関数登録
             .function("void println(const string& in message)", &script_println);
 
+        // 値型の登録
         asbind20::value_class<Vector3>(engine, "Vector3", asOBJ_APP_CLASS_ALLFLOATS)
-            .behaviours_by_traits()
-            .property("float x", &Vector3::x)
+            .behaviours_by_traits() // デフォルトの CTOR, DTOR などを自動登録
+            .property("float x", &Vector3::x) // メンバ x の登録
             .property("float y", &Vector3::y)
-            .property("float z", &Vector3::z);
+            .property("float z", &Vector3::z)
+            .opEquals(); // operator== の登録
 
         asbind20::value_class<FlagAndVector3>(engine, "FlagAndVector3")
-            .behaviours_by_traits()
+            .behaviours_by_traits() // デフォルトの CTOR, DTOR などを自動登録
             .constructor<bool>("bool flag")
-            .opEquals()
-            .opConv<bool>()
-            .opImplConv<bool>()
+            .opEquals() // operator== の登録
+            .opConv<bool>() // operator bool の登録
+            .opImplConv<bool>() // operator bool の登録 (暗黙の型変換用)
             .property("bool flag", &FlagAndVector3::flag)
             .property("Vector3 vec", &FlagAndVector3::vec)
             .method("float manhattan() const", &FlagAndVector3::manhattan);
