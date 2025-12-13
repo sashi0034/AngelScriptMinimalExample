@@ -1,0 +1,32 @@
+
+class Vector3 {
+    float x, y, z;
+}
+
+class FlagAndVector3 {
+    FlagAndVector3();
+    FlagAndVector3(bool flag);
+
+    bool flag;
+    Vector3 vector;
+
+    float manhattan() const;
+
+    bool opConv() const;
+    bool opImplConv() const;
+}
+
+class GameObject {
+    FlagAndVector3 someData;
+
+    bool equalsTo(const GameObject& in other) const;
+}
+
+class string {
+	string(const string&in);
+	string opAdd(?) const;
+	string opAdd_r(?) const;
+    // ...
+}
+
+void println(const string& in msg);
